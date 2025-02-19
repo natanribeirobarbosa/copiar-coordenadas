@@ -1,32 +1,53 @@
 document.addEventListener("DOMContentLoaded", function () {
-    let map = L.map('map').setView([-23.5505, -46.6333], 13); // São Paulo como ponto inicial
+    let map;
+    let selectedMarker = null; // Variável para armazenar o marcador selecionado
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    // Obtém a localização do usuário
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const { latitude, longitude } = position.coords;
+            iniciarMapa(latitude, longitude);
+        },
+        () => {
+            // Se o usuário negar permissão, usa um local padrão (São Paulo)
+            iniciarMapa(-23.5505, -46.6333);
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
 
-    let selectedMarker = null; // Variável para armazenar o marcador
+    function iniciarMapa(lat, lng) {
+        map = L.map('map').setView([lat, lng], 15);
 
-    // Evento de clique no mapa
-    map.on('click', function (e) {
-        let { lat, lng } = e.latlng;
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-        // Remove o marcador anterior, se existir
-        if (selectedMarker) {
-            map.removeLayer(selectedMarker);
-        }
-
-        // Adiciona um novo marcador na posição clicada
-        selectedMarker = L.marker([lat, lng]).addTo(map)
-            .bindPopup(`📍 Local Selecionado<br>Lat: ${lat.toFixed(5)}<br>Lng: ${lng.toFixed(5)}`)
+        // Adiciona um marcador na posição inicial do usuário
+        L.marker([lat, lng]).addTo(map)
+            .bindPopup("📍 Você está aqui")
             .openPopup();
 
-        // Atualiza o texto com as coordenadas
-        document.getElementById("coordinates").innerText = `Coordenadas: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        // Evento de clique no mapa
+        map.on('click', function (e) {
+            let { lat, lng } = e.latlng;
 
-        // Salva as coordenadas na variável global
-        window.selectedCoordinates = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-    });
+            // Remove o marcador anterior, se existir
+            if (selectedMarker) {
+                map.removeLayer(selectedMarker);
+            }
+
+            // Adiciona um novo marcador na posição clicada
+            selectedMarker = L.marker([lat, lng]).addTo(map)
+                .bindPopup(`📍 Local Selecionado<br>Lat: ${lat.toFixed(5)}<br>Lng: ${lng.toFixed(5)}`)
+                .openPopup();
+
+            // Atualiza o texto com as coordenadas
+            document.getElementById("coordinates").innerText = `Coordenadas: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+            // Salva as coordenadas na variável global
+            window.selectedCoordinates = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        });
+    }
 
     // Evento para copiar coordenadas ao clicar no botão
     document.getElementById("copyButton").addEventListener("click", function () {
