@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         () => {
             // Se o usuário negar permissão, usa um local padrão (São Paulo)
-            iniciarMapa(-23.21330, -46.89292);
+            iniciarMapa(-23.21494, -46.89306);
         },
         { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
     );
