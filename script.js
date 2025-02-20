@@ -6,6 +6,9 @@ document.addEventListener("DOMContentLoaded", function () {
     navigator.geolocation.getCurrentPosition(
         (position) => {
             const { latitude, longitude } = position.coords;
+            latitude= -23.21330;
+            longitude = -46.89292;
+            
             iniciarMapa(latitude, longitude);
         },
         () => {
